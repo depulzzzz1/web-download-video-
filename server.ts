@@ -166,7 +166,7 @@ app.post("/api/download/info", (req, res) => {
   console.log(`Extracting info for URL: ${url}`);
   
   // Spawn yt-dlp to get JSON representation of the video
-  const args = ["./yt-dlp", "-J", "--no-playlist", "--impersonate", "chrome"];
+  const args = ["./yt-dlp", "-J", "--no-playlist", "--impersonate", "chrome", "--js-runtimes", "node"];
   if (fs.existsSync(COOKIES_PATH)) {
     args.push("--cookies", COOKIES_PATH);
   }
@@ -192,6 +192,8 @@ app.post("/api/download/info", (req, res) => {
       let errorMsg = "Failed to fetch video information. Ensure the URL is valid.";
       if (stderrData.includes("This post may not be comfortable for some audiences") || stderrData.includes("Log in for access")) {
         errorMsg = "This video is age-restricted or sensitive. Please upload/paste your cookies in the Settings / Cookies tab to unlock access.";
+      } else if (stderrData.includes("Sign in to confirm") || stderrData.includes("confirm you’re not a bot") || stderrData.includes("confirm you're not a bot")) {
+        errorMsg = "Request blocked by anti-bot verification. Please export your browser's Netscape cookies and inject them in the Cookies tab to bypass this.";
       } else if (stderrData.includes("Sign in to confirm your age") || stderrData.includes("confirm your age")) {
         errorMsg = "Age verification required by the platform. Please upload/paste cookies in the Settings / Cookies tab to bypass this.";
       } else if (stderrData.includes("Private video") || stderrData.includes("is private")) {
@@ -264,7 +266,7 @@ app.post("/api/download/start", (req, res) => {
   };
 
   // Run in background
-  const args = ["./yt-dlp", "--no-playlist", "--impersonate", "chrome"];
+  const args = ["./yt-dlp", "--no-playlist", "--impersonate", "chrome", "--js-runtimes", "node"];
   if (fs.existsSync(COOKIES_PATH)) {
     args.push("--cookies", COOKIES_PATH);
   }
@@ -330,6 +332,8 @@ app.post("/api/download/start", (req, res) => {
       let errorMsg = `Download failed with exit code ${code}`;
       if (taskStderr.includes("This post may not be comfortable for some audiences") || taskStderr.includes("Log in for access")) {
         errorMsg = "Age-restricted/sensitive post. Please configure and load your cookies in Settings / Cookies tab.";
+      } else if (taskStderr.includes("Sign in to confirm") || taskStderr.includes("confirm you’re not a bot") || taskStderr.includes("confirm you're not a bot")) {
+        errorMsg = "Request blocked by anti-bot verification. Please export your browser's Netscape cookies and inject them in the Cookies tab to bypass this.";
       } else if (taskStderr.includes("Sign in to confirm your age") || taskStderr.includes("confirm your age")) {
         errorMsg = "Platform age-verification required. Use cookies in Settings / Cookies tab to download.";
       } else if (taskStderr.includes("Private video") || taskStderr.includes("is private")) {
