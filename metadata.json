@@ -1,0 +1,6 @@
+{
+  "name": "UltraProMax Downloader & Network Tools",
+  "description": "A high-performance universal media downloader and network diagnostics panel featuring real-time IP lookup, DNS resolution, and phone number analysis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
